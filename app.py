@@ -3,6 +3,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from authentication_route import auth_router, user_manager, SECRET_KEY, ALGORITHM
 from Contact_router import contact_router
+from fastapi.middleware.cors import CORSMiddleware
  
 app = FastAPI(title='Contact Manager', description='This app was built to help users manage their contacts', version= '1.0.0' )
 
@@ -28,7 +29,14 @@ async def middleware(request: Request, call_next):
     request.state.sub = payload.get('sub')
     
     return await call_next(request)
- 
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=False,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
         
 app.include_router(auth_router, prefix="/auth")
 app.include_router(contact_router, prefix = "/contacts")
